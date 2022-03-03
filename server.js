@@ -1,19 +1,20 @@
 'use strict'
 const cors = require('cors');
-const authRoutes= require('./auth/auth.routes');
+const authRoutes = require('./auth/auth.routes');
 const express = require('express');//
-const fileUpload= require('express-fileupload');
-const fs= require('fs');
-const path= require('path');
+const fileUpload = require('express-fileupload');
+const fs = require('fs');
+const http = require('http');
+const path = require('path');
 //const shelljs= require('shelljs');
-const properties= require('./config/properties');
+const properties = require('./config/properties');
 const DB = require('./config/db');
 //init db
 
 DB();
 
-const app= express();
-const router= express.Router();
+const app = express();
+const router = express.Router();
 
 app.use(cors());
 app.use('/api', router);
@@ -23,49 +24,73 @@ app.use('/api/solicitudes', require('./routes/solicitud'));
 app.use(fileUpload());
 
 
-const multipart= require('connect-multiparty');
-const multiPartMiddleware= multipart({
-    uploadDir:'./subidas'
+const multipart = require('connect-multiparty');
+const multiPartMiddleware = multipart({
+    uploadDir: './subidas'
 });
 
 
 
 const bodyParser = require('body-parser');
 const bodyParserJSON = bodyParser.json();
-const bodyParserURLEncoded = bodyParser.urlencoded({extended:true});
+const bodyParserURLEncoded = bodyParser.urlencoded({ extended: true });
 
 
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
-app.use (bodyParser.urlencoded({
-    extended:true
+app.use(bodyParser.json({type:"application/json"}));
+app.use(bodyParser.urlencoded({
+    extended: true
 }))
+app.use(express.static('public'));
 authRoutes(router);
 
 
 
-app.post('/api/subir', (req,res)=>{
-    let file= req.files.file;
-    const dirpath= "./subidas/" + req.body.codigo ;
-    if(!fs.existsSync(dirpath)){
-        fs.mkdirSync(dirpath);
-        /*  */
+app.post('/api/subir', (req, res) => {
+    const file = req.files.file;
+    const dirPathCodeUser = "./subidas/" + req.body.codigo;
+    if (!fs.existsSync(dirPathCodeUser)) {
+        fs.mkdirSync(dirPathCodeUser);
     }
-    if(!fs.existsSync(dirpath + "/" + req.body.rol)){
-        fs.mkdirSync(dirpath + "/" + req.body.rol)
+    const dirPathCodeUserRol = dirPathCodeUser + "/" + req.body.rol;
+    if (!fs.existsSync(dirPathCodeUserRol)) {
+        fs.mkdirSync(dirPathCodeUserRol)
     }
-    console.log("PATH",dirpath);
-    file.mv(`./subidas/${req.body.codigo}/${req.body.rol}/${file.name}`, error =>{
-        if(error) return res.status(500).send({message: error})
-        return res.status(200).send({message: "Archivo subido con exito"})
-    })    
+    /* fs.readdir(dirPathCodeUserRol, function(err, data) {
+        if(data.length  == 0) {
+            console.log("dir vacio")
+        }else{
+            console.log("dir lleno")
+        }
+    }) */
+
+    file.mv(dirPathCodeUserRol + "/" + file.name, error => {
+        if (error) {
+            return res.status(500).send({ message: error })
+        } else {
+            return res.status(200).send({ status: 200, message: "Archivo subido con exito", urlFile: dirPathCodeUserRol + "/" + file.name })
+        }
+    })
 });
 
-router.get('/', (req , res) =>{
+app.get('/api/download', (req, res, next) => {
+
+    const urlFile = req.headers.urlfile;
+    const urlFileFinal = urlFile.slice(2);
+
+    let file = `${__dirname}/${urlFileFinal}`;
+    const fileFinal = file.replace(new RegExp('\\' + path.sep, 'g'), '/');
+    res.download(fileFinal); // Set disposition and send it.
+
+    console.log("tttts: ", fileFinal);
+});
+
+router.get('/', (req, res) => {
     res.send('Hello from home');
 });
 
 app.use(router);
 
-app.listen(properties.PORT, ()=>
-console.log (`Server runing on port ${properties.PORT}`));
+app.listen(properties.PORT, () =>
+    console.log(`Server runing on port ${properties.PORT}`));

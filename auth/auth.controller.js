@@ -27,7 +27,6 @@ exports.createUser=(req, res, next)=>{
             accessToken: accessToken,
             expiresIn:expiresIn
         }
-        console.log(dataUser);
         //response
         res.send({dataUser});
     });

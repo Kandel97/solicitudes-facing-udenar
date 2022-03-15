@@ -74,7 +74,7 @@ exports.actualizarSolicitud = async (req, res) => {
 
 exports.actualizarUrlArchivoSolicitud = async (req, res) => {
     try {
-        const { archivoSecretariaUrl } = req.body;
+        const { archivoSecretariaUrl, archivoUsuarioUrl } = req.body;
         //buscar id que llega como parametro
         let solicitud = await Solicitud.findById(req.params.id);
         if (!solicitud) {
@@ -82,7 +82,7 @@ exports.actualizarUrlArchivoSolicitud = async (req, res) => {
         }
 
         solicitud.archivoSecretariaUrl = archivoSecretariaUrl;
-
+        solicitud.archivoUsuarioUrl = archivoUsuarioUrl;
 
         solicitud = await Solicitud.findByIdAndUpdate({ _id: req.params.id }, solicitud, { new: true })
         res.json(solicitud);

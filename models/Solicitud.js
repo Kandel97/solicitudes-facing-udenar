@@ -32,7 +32,7 @@ const SolicitudSchema = mongoose.Schema ({
         type:String,
         require: true
     },
-    archivoEstudianteUrl:{
+    archivoUsuarioUrl:{
         type: String,
         require: false
     },

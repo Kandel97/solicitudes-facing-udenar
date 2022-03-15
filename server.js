@@ -4,9 +4,7 @@ const authRoutes = require('./auth/auth.routes');
 const express = require('express');//
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
-const http = require('http');
 const path = require('path');
-//const shelljs= require('shelljs');
 const properties = require('./config/properties');
 const DB = require('./config/db');
 //init db
@@ -57,13 +55,6 @@ app.post('/api/subir', (req, res) => {
     if (!fs.existsSync(dirPathCodeUserRol)) {
         fs.mkdirSync(dirPathCodeUserRol)
     }
-    /* fs.readdir(dirPathCodeUserRol, function(err, data) {
-        if(data.length  == 0) {
-            console.log("dir vacio")
-        }else{
-            console.log("dir lleno")
-        }
-    }) */
 
     file.mv(dirPathCodeUserRol + "/" + file.name, error => {
         if (error) {
@@ -82,8 +73,6 @@ app.get('/api/download', (req, res, next) => {
     let file = `${__dirname}/${urlFileFinal}`;
     const fileFinal = file.replace(new RegExp('\\' + path.sep, 'g'), '/');
     res.download(fileFinal); // Set disposition and send it.
-
-    console.log("tttts: ", fileFinal);
 });
 
 router.get('/', (req, res) => {

@@ -10,6 +10,7 @@ router.post('/', solicitudController.crearSolicitud);
 router.get('/', solicitudController.obtenerSolicitudes);
 router.put('/:id', solicitudController.actualizarSolicitud);
 router.put('/urlFile/:id', solicitudController.actualizarUrlArchivoSolicitud);
+router.put('/actualizarEstado/:id', solicitudController.actualizarEstadoSolicitud);
 router.get('/:id', solicitudController.obtenerSolicitud);
 router.delete('/:id', solicitudController.eliminarSolcitud);
 

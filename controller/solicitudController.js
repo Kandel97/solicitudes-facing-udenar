@@ -15,20 +15,6 @@ exports.crearSolicitud = async (req, res) => {
     }
 }
 
-/* exports.obtenerSolicitudesPorEmail= async(req, res)=>{
-    
-    try {
-        console.log("obtenerSolicitudesPorEmail")
-        const solicitudes = await Solicitud.find({correo: req.query.correo});
-        res.json(solicitudes);
-      
-           
-    } catch (error) {
-        res.status(500).send('hubo un error' );
-    }
-    
-} */
-
 exports.obtenerSolicitudes = async (req, res) => {
 
     try {
@@ -83,6 +69,25 @@ exports.actualizarUrlArchivoSolicitud = async (req, res) => {
 
         solicitud.archivoSecretariaUrl = archivoSecretariaUrl;
         solicitud.archivoUsuarioUrl = archivoUsuarioUrl;
+
+        solicitud = await Solicitud.findByIdAndUpdate({ _id: req.params.id }, solicitud, { new: true })
+        res.json(solicitud);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('hubo un error');
+    }
+}
+
+exports.actualizarEstadoSolicitud = async(req, res) => {
+    try {
+        const { estadoSolicitud } = req.body;
+        //buscar id que llega como parametro
+        let solicitud = await Solicitud.findById(req.params.id);
+        if (!solicitud) {
+            res.status(484).json({ msg: 'No existe la solicitud' })
+        }
+
+        solicitud.estadoSolicitud = estadoSolicitud;
 
         solicitud = await Solicitud.findByIdAndUpdate({ _id: req.params.id }, solicitud, { new: true })
         res.json(solicitud);

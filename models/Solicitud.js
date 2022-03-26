@@ -43,6 +43,11 @@ const SolicitudSchema = mongoose.Schema ({
     estado:{
         type: Boolean,
         require: false
+    },
+    estadoSolicitud: {
+        type: Number,
+        require: true,
+        default: 0
     }
     
 });
